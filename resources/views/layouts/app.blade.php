@@ -27,14 +27,23 @@
         <!-- Navigation Links (Scrollable Middle Section) -->
         <nav class="py-4 flex-1 overflow-y-auto flex flex-col gap-1">
 
-            <!-- Main / Dashboard Section -->
-            <div class="mt-2 mb-2">
-                <p class="text-xs font-bold text-gray-800 uppercase tracking-widest px-6">Main</p>
-            </div>
-            <a href="{{ url('/dashboard') }}" class="block px-6 py-2.5 text-sm font-bold text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-900 transition-all">Dashboard</a>
-
             @if(Auth::check())
                 @php $role = Auth::user()->employee->role; @endphp
+
+                <!-- Main / Dashboard Section (Founders + Sales only) -->
+                @if(in_array($role, ['Founders/General Manager', 'Sales & Record Personnel']))
+                    <div class="mt-2 mb-2">
+                        <p class="text-xs font-bold text-gray-800 uppercase tracking-widest px-6">Main</p>
+                    </div>
+                    <a href="{{ url('/dashboard') }}"
+                       class="block px-6 py-2.5 text-sm font-bold text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-900 transition-all">
+                        Dashboard
+                    </a>
+                    <a href="{{ route('sales.history') }}"
+                       class="block px-6 py-2.5 text-sm font-bold text-gray-700 hover:text-gray-900 hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-900 transition-all">
+                        Sales History
+                    </a>
+                @endif
 
                 @if($role === 'Sales & Record Personnel')
                     <div class="mt-4 mb-2">

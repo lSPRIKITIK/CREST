@@ -15,8 +15,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
-
     // =========================================================
     // 1. Founders / General Manager Routes (Exclusive Full Edit Access)
     // =========================================================
@@ -37,9 +35,15 @@ Route::middleware('auth')->group(function () {
 
     // Read-Only Access (Sales + Founders)
     Route::middleware('role:Sales & Record Personnel,Founders/General Manager')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/orders/create', [\App\Http\Controllers\OrderController::class, 'create'])->name('orders.create');
         Route::get('/payments/record', [\App\Http\Controllers\PaymentController::class, 'create'])->name('payments.create');
         Route::get('/sales/generate', function () { return 'Generate Sales Report'; });
+
+        Route::get('/sales/history', [\App\Http\Controllers\SalesHistoryController::class, 'index'])->name('sales.history');
+        Route::get('/sales/history/{year}/{month}', [\App\Http\Controllers\SalesHistoryController::class, 'show'])
+            ->whereNumber('year')->whereNumber('month')
+            ->name('sales.history.month');
     });
 
     // Modify Access (ONLY Sales)

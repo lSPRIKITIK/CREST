@@ -36,7 +36,8 @@ class AuthController extends Controller
             // If active, proceed normally
             $request->session()->regenerate();
 
-            return redirect()->intended('dashboard');
+            // Send each role to a page it is allowed to open
+            return redirect($this->homeFor(Auth::user()));
         }
 
         return back()->withErrors([
@@ -44,6 +45,21 @@ class AuthController extends Controller
         ])->onlyInput('username');
     }
 
+    /**
+     * Landing page per role. Dashboard is restricted to Sales + Founders.
+     */
+/**
+     * Landing page per role with explicit routing rules.
+     */
+    private function homeFor(User $user): string
+    {
+        return match ($user->employee?->role) {
+            'Production Manager', 'Craftsmen'                       => route('production.index'),
+            'Delivery Personnel'                                    => route('delivery.index'),
+            'Sales & Record Personnel', 'Founders/General Manager' => route('dashboard'),
+            default                                                 => route('dashboard'),
+        };
+    }
 
     public function logout(Request $request)
     {

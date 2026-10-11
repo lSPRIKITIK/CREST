@@ -10,10 +10,18 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Total Revenue (Sum of all received payments)
+        // 1. Revenue (sum of all received payments)
         $totalRevenue = Payment::sum('amount');
 
-        // 2. Active Production (Trophies currently being crafted)
+        $monthlyRevenue = Payment::whereBetween('created_at', [
+                now()->startOfMonth(), now()->endOfMonth()
+            ])->sum('amount');
+
+        $yearlyRevenue = Payment::whereBetween('created_at', [
+                now()->startOfYear(), now()->endOfYear()
+            ])->sum('amount');
+
+// 2. Active Production (Trophies currently being crafted)
         $activeProduction = Order::where('order_status', 'In Production')->count();
 
         // 3. Logistics Queue (Trophies waiting for a driver)
@@ -30,11 +38,13 @@ class DashboardController extends Controller
             ->get();
 
         return view('dashboard', compact(
-            'totalRevenue',
-            'activeProduction',
-            'pendingDeliveries',
-            'pendingPayments',
-            'recentOrders'
+        'totalRevenue',
+        'monthlyRevenue',
+        'yearlyRevenue',
+        'activeProduction',
+        'pendingDeliveries',
+        'pendingPayments',
+        'recentOrders'
         ));
     }
 }

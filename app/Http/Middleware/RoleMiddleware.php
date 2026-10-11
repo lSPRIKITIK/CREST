@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-public function handle(Request $request, Closure $next, ...$roles)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
         if (!Auth::check()) {
             return redirect('/login');
@@ -29,9 +29,26 @@ public function handle(Request $request, Closure $next, ...$roles)
 
         // 2. Standard Role Check for everyone else
         if (!empty($roles) && !in_array($userRole, $roles)) {
-            abort(403, 'Unauthorized action. Your role (' . $userRole . ') does not have access to this module.');
+            $home = $this->homeFor($userRole);
+
+            // Avoid a redirect loop if the user is blocked from their own home page
+            if ($home === null || $request->url() === $home) {
+                abort(403, 'Unauthorized action. Your role (' . $userRole . ') does not have access to this module.');
+            }
+
+            return redirect($home)->with('error', 'You do not have access to that page.');
         }
 
         return $next($request);
+    }
+
+    private function homeFor(?string $role): ?string
+    {
+        return match ($role) {
+            'Production Manager', 'Craftsmen' => route('production.index'),
+            'Delivery Personnel'              => route('delivery.index'),
+            'Sales & Record Personnel'        => route('dashboard'),
+            default                           => null,
+        };
     }
 }

@@ -6,12 +6,22 @@
     <!-- Top Metric Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-        <!-- Revenue Card -->
         <div class="bg-white border border-gray-200 rounded-3xl p-6 flex flex-col justify-center shadow-sm hover:shadow-md transition-shadow">
-            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Gross Sales</h4>
-            <span class="text-3xl font-black text-emerald-600">₱{{ number_format($totalRevenue, 2) }}</span>
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Sales This Month</h4>
+            <span class="text-3xl font-black text-emerald-600">₱{{ number_format($monthlyRevenue, 2) }}</span>
+            <span class="text-xs text-gray-400 mt-1">{{ now()->format('F Y') }}</span>
         </div>
 
+        <div class="bg-white border border-gray-200 rounded-3xl p-6 flex flex-col justify-center shadow-sm hover:shadow-md transition-shadow">
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Sales This Year</h4>
+            <span class="text-3xl font-black text-emerald-600">₱{{ number_format($yearlyRevenue, 2) }}</span>
+            <span class="text-xs text-gray-400 mt-1">{{ now()->year }}</span>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-3xl p-6 flex flex-col justify-center shadow-sm hover:shadow-md transition-shadow">
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Gross Sales (All Time)</h4>
+            <span class="text-3xl font-black text-emerald-600">₱{{ number_format($totalRevenue, 2) }}</span>
+        </div>
         <!-- Production Card -->
         <div class="bg-white border border-gray-200 rounded-3xl p-6 flex flex-col justify-center shadow-sm hover:shadow-md transition-shadow">
             <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">In Production</h4>
