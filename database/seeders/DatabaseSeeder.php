@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         // 1. Create the Founder/General Manager employee record
         $employee = Employee::create([
             'employee_fn' => 'Carmelita',
-            'employee_mn' => 'B.',
+            'employee_mi' => 'B.',
             'employee_ln' => 'Aquino',
             'role' => 'Founders/General Manager',
             'contact_number' => '09123456789',
