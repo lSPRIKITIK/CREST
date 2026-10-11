@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Create the Founder/General Manager employee record
         $employee = Employee::create([
-            'employee_fn' => 'Dexter',
+            'employee_fn' => 'Carmelita',
             'employee_mn' => 'B.',
             'employee_ln' => 'Aquino',
             'role' => 'Founders/General Manager',
@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         // 2. Create the linked User account
         User::create([
             'employee_id' => $employee->employee_id,
-            'username' => 'admin_dexter',
+            'username' => 'admin',
             'password' => Hash::make('Admin123!'),
             'account_status' => 'active',
             'failed_attempts' => 0,
