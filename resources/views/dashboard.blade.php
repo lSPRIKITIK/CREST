@@ -8,7 +8,7 @@
 
         <!-- Revenue Card -->
         <div class="bg-white border border-gray-200 rounded-3xl p-6 flex flex-col justify-center shadow-sm hover:shadow-md transition-shadow">
-            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Total Revenue</h4>
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Gross Sales</h4>
             <span class="text-3xl font-black text-emerald-600">₱{{ number_format($totalRevenue, 2) }}</span>
         </div>
 

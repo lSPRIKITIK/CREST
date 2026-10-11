@@ -49,7 +49,7 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Start Stock</label>
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Starting Stocks</label>
                         <input type="number" step="0.01" name="quantity" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                     </div>
                     <div>

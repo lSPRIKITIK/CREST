@@ -31,7 +31,8 @@ Route::middleware('auth')->group(function () {
     });
 
     // 2. Sales & Record Personnel Routes
-    Route::middleware('role:Sales & Record Personnel')->group(function () {
+
+    Route::middleware('role:Sales & Record Personnel,Founders/General Manager')->group(function () {
         Route::get('/orders/create', [\App\Http\Controllers\OrderController::class, 'create'])->name('orders.create');
         Route::post('/orders', [\App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
 

@@ -12,7 +12,7 @@ use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
-public function create()
+    public function create()
     {
         $orders = \App\Models\Order::with('client')
             ->withSum('payments', 'amount')
@@ -22,7 +22,8 @@ public function create()
 
         return view('payments.create', compact('orders'));
     }
-public function store(Request $request)
+
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'order_id' => 'required|exists:orders,order_id',
@@ -36,24 +37,26 @@ public function store(Request $request)
         ]);
 
         $order = Order::findOrFail($validated['order_id']);
+
         // STRICT SECURITY: Prevent bypassing the disabled dropdown
         if (!in_array($order->order_status, ['Pending Downpayment', 'Delivered'])) {
             return back()->withErrors(['amount_paid' => 'Error: This order is currently ' . $order->order_status . ' and is locked from receiving payments.']);
         }
-        // Calculate exact expected amounts (rounded to 2 decimal places to prevent float errors)
+
+        // Calculate exact expected amounts
         $totalPaid = \App\Models\Payment::where('order_id', $order->order_id)->sum('amount');
         $remainingBalance = round($order->total_amount - $totalPaid, 2);
         $exactDownpayment = round($order->total_amount / 2, 2);
         $inputAmount = round($validated['amount_paid'], 2);
 
-        // STRICT PAYMENT VALIDATION: Force exact amounts
+        // STRICT PAYMENT VALIDATION: Force exact 50% splits only
         if ($order->order_status === 'Pending Downpayment') {
-            // Client must pay either exactly 50% or exactly 100%
-            if ($inputAmount !== $exactDownpayment && $inputAmount !== $remainingBalance) {
-                return back()->withErrors(['amount_paid' => 'Error: You must pay either the exact 50% downpayment (₱' . number_format($exactDownpayment, 2) . ') or the Full Amount (₱' . number_format($remainingBalance, 2) . ').']);
+            // Client MUST pay exactly 50%
+            if ($inputAmount !== $exactDownpayment) {
+                return back()->withErrors(['amount_paid' => 'Error: You must pay exactly the 50% downpayment (₱' . number_format($exactDownpayment, 2) . ').']);
             }
         } elseif ($order->order_status === 'Delivered') {
-            // Client must pay the exact remaining balance
+            // Client MUST pay the exact remaining balance
             if ($inputAmount !== $remainingBalance) {
                 return back()->withErrors(['amount_paid' => 'Error: You must pay the exact remaining final balance of ₱' . number_format($remainingBalance, 2) . '.']);
             }
@@ -71,14 +74,8 @@ public function store(Request $request)
                 if (!empty($provider)) $finalPaymentMethod .= ' - ' . $provider;
             }
 
-            // Determine Payment Type dynamically
-            if ($totalPaid == 0 && $inputAmount == $order->total_amount) {
-                $paymentType = 'Full'; // Paid everything upfront
-            } elseif ($totalPaid == 0) {
-                $paymentType = 'Downpayment (50%)';
-            } else {
-                $paymentType = 'Final (50%)'; // Clearing the balance
-            }
+            // Determine Payment Type dynamically (Strict 50/50 split)
+            $paymentType = ($totalPaid == 0) ? 'Downpayment (50%)' : 'Final (50%)';
 
             // 1. Record the Payment
             $payment = \App\Models\Payment::create([
@@ -113,7 +110,7 @@ public function store(Request $request)
         $newStatus = $order->fresh()->order_status;
         $message = $newStatus === 'Completed'
             ? 'Final payment recorded successfully. Order is now officially Completed.'
-            : 'Payment recorded successfully. Order is now In Production.';
+            : 'Downpayment recorded successfully. Order is now In Production.';
 
         return back()->with('success', $message);
     }

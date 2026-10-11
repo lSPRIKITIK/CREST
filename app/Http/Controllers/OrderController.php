@@ -33,8 +33,8 @@ class OrderController extends Controller
         ]);
 
         DB::transaction(function () use ($validated) {
-            // 1. Find existing client or create a new one
-            $client = Client::firstOrCreate(
+// Change firstOrCreate to updateOrCreate
+            $client = Client::updateOrCreate(
                 ['client_name' => $validated['client_name']],
                 [
                     'contact_person' => $validated['contact_person'],
