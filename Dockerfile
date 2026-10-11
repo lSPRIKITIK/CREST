@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: PHP app
-FROM serversideup/php:8.3-fpm-nginx
+FROM serversideup/php:8.5.11
 
 ENV PHP_OPCACHE_ENABLE=1
 ENV AUTORUN_ENABLED=true
