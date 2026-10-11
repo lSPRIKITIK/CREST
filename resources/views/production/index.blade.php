@@ -3,6 +3,10 @@
 @section('header_title', 'Active Production')
 
 @section('content')
+    @php
+        $canEdit = auth()->user()->employee->role === 'Production Manager';
+    @endphp
+
     <div class="bg-white border border-gray-200 rounded-3xl shadow-sm p-8 relative">
         <div class="flex justify-between items-center mb-8">
             <div>
@@ -25,7 +29,9 @@
                         <th class="pb-3 px-2 font-bold tracking-wider">Client</th>
                         <th class="pb-3 px-2 font-bold tracking-wider">Production Deadline</th>
                         <th class="pb-3 px-2 font-bold tracking-wider">Current Status</th>
-                        <th class="pb-3 px-2 font-bold tracking-wider text-right">Action</th>
+                        @if($canEdit)
+                            <th class="pb-3 px-2 font-bold tracking-wider text-right">Action</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -39,19 +45,21 @@
                                 {{ $order->order_status }}
                             </span>
                         </td>
-                        <td class="py-5 px-2 text-right">
-                            <form action="{{ route('production.update', $order->order_id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="bg-gray-900 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors shadow-sm">
-                                    Mark Ready for Delivery
-                                </button>
-                            </form>
-                        </td>
+                        @if($canEdit)
+                            <td class="py-5 px-2 text-right">
+                                <form action="{{ route('production.update', $order->order_id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="bg-gray-900 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors shadow-sm">
+                                        Mark Ready for Delivery
+                                    </button>
+                                </form>
+                            </td>
+                        @endif
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-12 text-center text-gray-400 font-medium">No orders are currently in production.</td>
+                        <td colspan="{{ $canEdit ? '5' : '4' }}" class="py-12 text-center text-gray-400 font-medium">No orders are currently in production.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -59,4 +67,3 @@
         </div>
     </div>
 @endsection
-

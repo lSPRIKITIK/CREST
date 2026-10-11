@@ -36,7 +36,7 @@
             @if(Auth::check())
                 @php $role = Auth::user()->employee->role; @endphp
 
-                @if(in_array($role, ['Sales & Record Personnel', 'Founders/General Manager']))
+                @if($role === 'Sales & Record Personnel')
                     <div class="mt-4 mb-2">
                         <hr class="border-gray-100 mb-4 mx-4">
                         <p class="text-xs font-bold text-gray-800 uppercase tracking-widest px-6">Sales</p>

@@ -3,9 +3,16 @@
 @section('header_title', 'Raw Materials & Inventory')
 
 @section('content')
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    @php
+        // ONLY the Production Manager gets edit rights. Founders and Craftsmen are read-only.
+        $canEdit = auth()->user()->employee->role === 'Production Manager';
+    @endphp
 
-        <!-- Add New Material Form -->
+    <!-- Dynamic Grid: 3 columns for Production Manager, 1 full-width column for Founders & Craftsmen -->
+    <div class="grid grid-cols-1 {{ $canEdit ? 'lg:grid-cols-3' : '' }} gap-6">
+
+        @if($canEdit)
+        <!-- Add New Material Form (Hidden from Founder and Craftsmen) -->
         <div class="bg-white border border-gray-200 rounded-3xl p-8 h-fit shadow-sm">
             <h3 class="text-xl font-black text-gray-900 mb-6">Register Material</h3>
 
@@ -61,9 +68,10 @@
                 <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl hover:bg-gray-800 transition-colors shadow-sm mt-2">Add to System</button>
             </form>
         </div>
+        @endif
 
         <!-- Inventory List -->
-        <div class="lg:col-span-2 bg-white border border-gray-200 rounded-3xl p-8 overflow-x-auto shadow-sm">
+        <div class="{{ $canEdit ? 'lg:col-span-2' : 'w-full' }} bg-white border border-gray-200 rounded-3xl p-8 overflow-x-auto shadow-sm">
             <h3 class="text-xl font-black text-gray-900 mb-6">Current Stock Levels</h3>
 
             <table class="w-full text-left text-sm text-gray-700">
@@ -72,7 +80,10 @@
                         <th class="pb-3 px-2 font-bold tracking-wider">Material</th>
                         <th class="pb-3 px-2 font-bold tracking-wider">Category</th>
                         <th class="pb-3 px-2 font-bold tracking-wider">Current Stock</th>
+
+                        @if($canEdit)
                         <th class="pb-3 px-2 font-bold tracking-wider text-right">Adjust Stock</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -91,6 +102,8 @@
                             <td class="py-4 px-2 font-black text-lg {{ $isLowStock ? 'text-red-500' : 'text-emerald-600' }}">
                                 {{ $item->quantity }} <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ $item->unit }}</span>
                             </td>
+
+                            @if($canEdit)
                             <td class="py-4 px-2">
                                 <form action="{{ route('inventory.adjust', $item->item_id) }}" method="POST" class="flex justify-end gap-2 m-0 items-center">
                                     @csrf
@@ -100,10 +113,11 @@
                                     <button type="submit" name="adjustment_type" value="add" class="bg-white border border-blue-200 text-blue-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm">+ Buy</button>
                                 </form>
                             </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="py-8 text-center text-gray-400 font-medium">No inventory materials registered.</td>
+                            <td colspan="{{ $canEdit ? '4' : '3' }}" class="py-8 text-center text-gray-400 font-medium">No inventory materials registered.</td>
                         </tr>
                     @endforelse
                 </tbody>
