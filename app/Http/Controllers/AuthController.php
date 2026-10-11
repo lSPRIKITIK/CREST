@@ -43,26 +43,36 @@ class AuthController extends Controller
             return redirect($this->homeFor(Auth::user()));
         }
 
-        // FAILED LOGIN: Check if the username actually exists and is active
-        $user = clone User::where('username', $request->username)->first();
-
+// FAILED LOGIN: Check if the username actually exists and is active
+        $user = User::where('username', $request->username)->first();
         if ($user && $user->account_status === 'active') {
-            // Record a strike (lasts for 24 hours)
-            RateLimiter::hit($throttleKey, 86400);
 
-            if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-                // 5th Strike: Lock the account and clear the tracker
-                $user->update(['account_status' => 'deactivated']);
-                RateLimiter::clear($throttleKey);
+            // SECURITY EXCEPTION: Founder gets unlimited attempts
+            $isAdmin = $user->employee?->role === 'Founders/General Manager';
 
+            if (!$isAdmin) {
+                // Record a strike for normal employees (lasts for 24 hours)
+                RateLimiter::hit($throttleKey, 86400);
+
+                if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+                    // 5th Strike: Lock the account and clear the tracker
+                    $user->update(['account_status' => 'deactivated']);
+                    RateLimiter::clear($throttleKey);
+
+                    return back()->withErrors([
+                        'username' => 'SECURITY ALERT: Account locked due to 5 failed login attempts. Please contact the Founder to reactivate your account.',
+                    ])->onlyInput('username');
+                }
+
+                $attemptsLeft = 5 - RateLimiter::attempts($throttleKey);
                 return back()->withErrors([
-                    'username' => 'SECURITY ALERT: Account locked due to 5 failed login attempts. Please contact the Founder to reactivate your account.',
+                    'username' => "Incorrect password. You have $attemptsLeft attempt(s) left before your account is locked.",
                 ])->onlyInput('username');
             }
 
-            $attemptsLeft = 5 - RateLimiter::attempts($throttleKey);
+            // If it IS the Founder/Admin, just return a standard error with NO strike penalty
             return back()->withErrors([
-                'username' => "Incorrect password. You have $attemptsLeft attempt(s) left before your account is locked.",
+                'username' => 'Incorrect password.',
             ])->onlyInput('username');
         }
 
@@ -71,7 +81,6 @@ class AuthController extends Controller
             'username' => 'The provided credentials do not match our records or your account is disabled.',
         ])->onlyInput('username');
     }
-
     /**
      * Landing page per role with explicit routing rules.
      */
