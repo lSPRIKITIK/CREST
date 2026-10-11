@@ -94,17 +94,22 @@
                                 </span>
                             </td>
 
-                            <td class="py-4 px-2 text-right">
-                                <!-- Protection Logic Applied Here -->
-                                @if($account->role === 'Founders/General Manager')
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">Protected</span>
-                                @else
-                                    <form action="{{ route('accounts.destroy', $account->employee_id) }}" method="POST" class="inline m-0">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" onclick="return confirm('Are you sure you want to deactivate this account?')" class="bg-white border border-red-200 text-red-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-700 transition-colors shadow-sm">Deactivate</button>
-                                    </form>
-                                @endif
+                            <td class="py-4 px-2">
+                                <div class="flex items-center justify-end gap-2">
+                                    <!-- EVERYONE gets an Edit button -->
+                                    <a href="{{ route('accounts.edit', $account->employee_id) }}" class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm">Edit</a>
+
+                                    <!-- Protection Logic for Deactivation -->
+                                    @if($account->role === 'Founders/General Manager')
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">Protected</span>
+                                    @else
+                                        <form action="{{ route('accounts.destroy', $account->employee_id) }}" method="POST" class="inline m-0">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" onclick="return confirm('Are you sure you want to deactivate this account?')" class="bg-white border border-red-200 text-red-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-700 transition-colors shadow-sm">Deactivate</button>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty

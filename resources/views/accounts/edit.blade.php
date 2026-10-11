@@ -47,6 +47,7 @@
                 <option value="Sales & Record Personnel" {{ $employee->role === 'Sales & Record Personnel' ? 'selected' : '' }}>Sales & Record Personnel</option>
                 <option value="Production Manager" {{ $employee->role === 'Production Manager' ? 'selected' : '' }}>Production Manager</option>
                 <option value="Delivery Personnel" {{ $employee->role === 'Delivery Personnel' ? 'selected' : '' }}>Delivery Personnel</option>
+                <option value="Founders/General Manager" {{ $employee->role === 'Founders/General Manager' ? 'selected' : '' }}>Founders / General Manager</option>
             </select>
         </div>
 
