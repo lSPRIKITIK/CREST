@@ -45,7 +45,7 @@
                     <a href="{{ route('payments.create') }}" class="block px-6 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 border-l-4 border-transparent hover:border-gray-900 transition-all">Record Payment</a>
                 @endif
 
-                @if(in_array($role, ['Production Manager', 'Founders/General Manager']))
+                @if(in_array($role, ['Production Manager', 'Founders/General Manager', 'Craftsmen']))
                     <div class="mt-4 mb-2">
                         <hr class="border-gray-100 mb-4 mx-4">
                         <p class="text-xs font-bold text-gray-800 uppercase tracking-widest px-6">Production</p>

@@ -14,9 +14,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Global Dashboard (Everyone can access their own version of the dashboard)
-Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
-        ->name('dashboard');
-// 1. Founders / General Manager Routes
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+            ->name('dashboard');
+
+    // 1. Founders / General Manager Routes
     Route::middleware('role:Founders/General Manager')->group(function () {
         Route::get('/accounts', [\App\Http\Controllers\AccountController::class, 'index'])->name('accounts.index');
         Route::post('/accounts', [\App\Http\Controllers\AccountController::class, 'store'])->name('accounts.store');
@@ -28,7 +29,8 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
         Route::patch('/accounts/{id}/toggle-status', [\App\Http\Controllers\AccountController::class, 'toggleStatus'])->name('accounts.toggleStatus');
         Route::get('/tracking', [\App\Http\Controllers\TrackingController::class, 'index'])->name('tracking.index');
     });
-        // 2. Sales & Record Personnel Routes
+
+    // 2. Sales & Record Personnel Routes
     Route::middleware('role:Sales & Record Personnel')->group(function () {
         Route::get('/orders/create', [\App\Http\Controllers\OrderController::class, 'create'])->name('orders.create');
         Route::post('/orders', [\App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
@@ -39,8 +41,9 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
 
         Route::get('/sales/generate', function () { return 'Generate Sales Report'; });
     });
-   // 3. Production Manager Routes
-    Route::middleware('role:Production Manager')->group(function () {
+
+    // 3. Production Manager & Craftsmen Routes
+    Route::middleware('role:Production Manager,Craftsmen')->group(function () {
         Route::get('/production', [\App\Http\Controllers\ProductionController::class, 'index'])->name('production.index');
         Route::patch('/production/{order_id}', [\App\Http\Controllers\ProductionController::class, 'update'])->name('production.update');
 
@@ -50,12 +53,14 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
         Route::patch('/inventory/{id}/adjust', [\App\Http\Controllers\InventoryController::class, 'adjust'])->name('inventory.adjust');
         Route::delete('/inventory/{id}', [\App\Http\Controllers\InventoryController::class, 'destroy'])->name('inventory.destroy');
     });
+
     // 4. Delivery Personnel Routes
     Route::middleware('role:Delivery Personnel')->group(function () {
         Route::get('/delivery/dispatch', [\App\Http\Controllers\DeliveryController::class, 'index'])->name('delivery.index');
         Route::patch('/delivery/{order_id}', [\App\Http\Controllers\DeliveryController::class, 'update'])->name('delivery.update');
     });
 });
+
 // Redirect root to login
 Route::get('/', function () {
     return redirect('/login');
