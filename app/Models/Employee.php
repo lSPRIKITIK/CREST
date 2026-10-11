@@ -9,7 +9,13 @@ class Employee extends Model
     // This tells Laravel the primary key is NOT 'id'
     protected $primaryKey = 'employee_id';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'employee_fn',
+        'employee_mi',
+        'employee_ln',
+        'role',
+        'account_status'
+    ];
 
     public function user() {
         return $this->hasOne(User::class, 'employee_id');

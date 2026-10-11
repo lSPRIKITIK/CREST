@@ -13,7 +13,7 @@ use Carbon\Carbon;
 
 class AccountController extends Controller
 {
-public function index()
+    public function index()
     {
         // Fetch all employees and their associated user login data
         $accounts = \App\Models\Employee::with('user')->get();
@@ -21,10 +21,12 @@ public function index()
         // Pass the $accounts variable to the view
         return view('accounts.index', compact('accounts'));
     }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
             'employee_fn' => 'required|string|max:255',
+            'employee_mi' => 'nullable|string|max:5',
             'employee_ln' => 'required|string|max:255',
             'role' => 'required|string|in:Founders/General Manager,Sales & Record Personnel,Production Manager,Craftsmen,Delivery Personnel',
             'username' => 'required|string|unique:users,username',
@@ -34,8 +36,10 @@ public function index()
         DB::transaction(function () use ($validated) {
             $employee = Employee::create([
                 'employee_fn' => $validated['employee_fn'],
+                'employee_mi' => $validated['employee_mi'] ?? null,
                 'employee_ln' => $validated['employee_ln'],
                 'role' => $validated['role'],
+                'account_status' => 'active',
             ]);
 
             User::create([
@@ -64,6 +68,7 @@ public function index()
 
         $validated = $request->validate([
             'employee_fn' => 'required|string|max:255',
+            'employee_mi' => 'nullable|string|max:5',
             'employee_ln' => 'required|string|max:255',
             'role' => 'required|string|in:Founders/General Manager,Sales & Record Personnel,Production Manager,Craftsmen,Delivery Personnel',
             'username' => [
@@ -77,6 +82,7 @@ public function index()
         DB::transaction(function () use ($validated, $employee) {
             $employee->update([
                 'employee_fn' => $validated['employee_fn'],
+                'employee_mi' => $validated['employee_mi'] ?? null,
                 'employee_ln' => $validated['employee_ln'],
                 'role' => $validated['role'],
             ]);

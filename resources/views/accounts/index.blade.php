@@ -24,12 +24,16 @@
 
             <form action="{{ route('accounts.store') }}" method="POST" class="flex flex-col gap-5">
                 @csrf
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
+                <div class="grid grid-cols-5 gap-4">
+                    <div class="col-span-2">
                         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">First Name</label>
                         <input type="text" name="employee_fn" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                     </div>
-                    <div>
+                    <div class="col-span-1">
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">M.I.</label>
+                        <input type="text" name="employee_mi" maxlength="5" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all text-center">
+                    </div>
+                    <div class="col-span-2">
                         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Last Name</label>
                         <input type="text" name="employee_ln" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                     </div>
@@ -76,7 +80,11 @@
                     @forelse($accounts as $account)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="py-4 px-2 font-bold text-gray-900">
-                                {{ $account->employee_fn }} {{ $account->employee_ln }}
+                                {{ $account->employee_fn }}
+                                @if($account->employee_mi)
+                                    {{ strtoupper(substr(trim($account->employee_mi), 0, 1)) }}.
+                                @endif
+                                {{ $account->employee_ln }}
                             </td>
                             <td class="py-4 px-2 font-medium text-gray-500">{{ $account->user->username ?? 'No Login' }}</td>
                             <td class="py-4 px-2">
