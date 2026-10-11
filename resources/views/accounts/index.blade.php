@@ -104,14 +104,25 @@
                                     @if($account->role === 'Founders/General Manager')
                                         <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">Protected</span>
                                     @else
-                                        <form action="{{ route('accounts.destroy', $account->employee_id) }}" method="POST" class="inline m-0">
+                                        <!-- FIXED: Now points to toggleStatus using PATCH -->
+                                        <form action="{{ route('accounts.toggleStatus', $account->employee_id) }}" method="POST" class="inline m-0">
                                             @csrf
-                                            @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Are you sure you want to deactivate this account?')" class="bg-white border border-red-200 text-red-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-700 transition-colors shadow-sm">Deactivate</button>
+                                            @method('PATCH')
+
+                                            @if(optional($account->user)->account_status === 'active')
+                                                <button type="submit" onclick="return confirm('Are you sure you want to deactivate this account? They will be logged out and unable to sign in.')" class="bg-white border border-red-200 text-red-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-700 transition-colors shadow-sm">
+                                                    Deactivate
+                                                </button>
+                                            @else
+                                                <button type="submit" onclick="return confirm('Are you sure you want to reactivate this account?')" class="bg-white border border-emerald-200 text-emerald-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-emerald-50 hover:text-emerald-700 transition-colors shadow-sm">
+                                                    Activate
+                                                </button>
+                                            @endif
                                         </form>
                                     @endif
                                 </div>
                             </td>
+
                         </tr>
                     @empty
                         <tr>
