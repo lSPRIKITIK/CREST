@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Order extends Model
+{
+    protected $primaryKey = 'order_id';
+    protected $guarded = [];
+    protected $casts = ['order_date' => 'date', 'due_date' => 'date'];
+
+    // This tells Laravel how to find the Client for this Order
+    public function client() {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public function items() {
+        return $this->hasMany(OrderItem::class, 'order_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'order_id', 'order_id');
+    }
+}
