@@ -87,11 +87,13 @@
                                 {{ $account->employee_ln }}
                             </td>
                             <td class="py-4 px-2 font-medium text-gray-500">{{ $account->user->username ?? 'No Login' }}</td>
+
                             <td class="py-4 px-2">
                                 <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider border rounded-full bg-gray-50 text-gray-600 border-gray-200">
                                     {{ $account->role }}
                                 </span>
                             </td>
+
                             <td class="py-4 px-2 text-right">
                                 <!-- Protection Logic Applied Here -->
                                 @if($account->role === 'Founders/General Manager')

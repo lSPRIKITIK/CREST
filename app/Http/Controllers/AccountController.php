@@ -34,12 +34,12 @@ class AccountController extends Controller
         ]);
 
         DB::transaction(function () use ($validated) {
+            // FIXED: Removed 'account_status' from the Employee creation
             $employee = Employee::create([
                 'employee_fn' => $validated['employee_fn'],
                 'employee_mi' => $validated['employee_mi'] ?? null,
                 'employee_ln' => $validated['employee_ln'],
                 'role' => $validated['role'],
-                'account_status' => 'active',
             ]);
 
             User::create([
