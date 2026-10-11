@@ -119,9 +119,23 @@
                     const amount = parseFloat(payment.amount).toLocaleString('en-US', {minimumFractionDigits: 2});
                     const ref = payment.reference_number ? payment.reference_number : '<span class="text-gray-400 italic">N/A</span>';
 
+                    // BULLETPROOF DATE SPLITTER: Extracts "YYYY-MM-DD" directly
+                    const datePart = payment.payment_date ? payment.payment_date.split('T')[0] : '';
+                    let formattedDate = datePart;
+
+                    if (datePart) {
+                        const [year, month, day] = datePart.split('-');
+                        const dateObj = new Date(year, month - 1, day);
+                        formattedDate = dateObj.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    }
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td class="p-4 whitespace-nowrap">${payment.payment_date}</td>
+                        <td class="p-4 whitespace-nowrap">${formattedDate}</td>
                         <td class="p-4 font-bold text-gray-900">${payment.payment_type}</td>
                         <td class="p-4">${payment.payment_method}</td>
                         <td class="p-4 font-mono text-xs text-gray-500">${ref}</td>
@@ -129,7 +143,8 @@
                     `;
                     tbody.appendChild(tr);
                 });
-            } else {
+            }
+            else {
                 tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400 text-xs italic">No payments have been recorded for this order yet.</td></tr>`;
             }
 
