@@ -44,6 +44,7 @@
                     <select name="role" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                         <option value="Sales & Record Personnel">Sales & Record Personnel</option>
                         <option value="Production Manager">Production Manager</option>
+                        <option value="Craftsmen">Craftsmen</option>
                         <option value="Delivery Personnel">Delivery Personnel</option>
                         <option value="Founders/General Manager">Founders / General Manager</option>
                     </select>

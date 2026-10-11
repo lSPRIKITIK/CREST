@@ -46,11 +46,11 @@
             <select name="role" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                 <option value="Sales & Record Personnel" {{ $employee->role === 'Sales & Record Personnel' ? 'selected' : '' }}>Sales & Record Personnel</option>
                 <option value="Production Manager" {{ $employee->role === 'Production Manager' ? 'selected' : '' }}>Production Manager</option>
+                <option value="Craftsmen" {{ $employee->role === 'Craftsmen' ? 'selected' : '' }}>Craftsmen</option>
                 <option value="Delivery Personnel" {{ $employee->role === 'Delivery Personnel' ? 'selected' : '' }}>Delivery Personnel</option>
                 <option value="Founders/General Manager" {{ $employee->role === 'Founders/General Manager' ? 'selected' : '' }}>Founders / General Manager</option>
             </select>
         </div>
-
         <div class="mt-4 pt-4 border-t border-gray-100">
             <h4 class="text-xs font-black text-gray-900 uppercase tracking-widest mb-4">Login Credentials</h4>
 
