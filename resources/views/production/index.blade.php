@@ -50,9 +50,10 @@
                                 <form action="{{ route('production.update', $order->order_id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="bg-gray-900 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors shadow-sm">
-                                        Mark Ready for Delivery
-                                    </button>
+
+                                <button type="submit" class="bg-gray-900 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors shadow-sm">
+                                    {{ $order->order_status === 'Prototype Approval' ? 'Approve Prototype' : 'Mark Ready for Delivery' }}
+                                </button>
                                 </form>
                             </td>
                         @endif

@@ -9,9 +9,9 @@ class ProductionController extends Controller
 {
     public function index()
     {
-        // Fetch orders that are currently on the workshop floor, including their item details
+        // Fetch BOTH prototype and full production orders
         $orders = Order::with(['client', 'items'])
-            ->where('order_status', 'In Production')
+            ->whereIn('order_status', ['Prototype Approval', 'Full Production'])
             ->orderBy('updated_at', 'asc') // Oldest first (FIFO)
             ->get();
 
@@ -22,11 +22,17 @@ class ProductionController extends Controller
     {
         $order = Order::findOrFail($order_id);
 
-        // Push the order to the next workflow stage
-        $order->update([
-            'order_status' => 'Ready for Delivery'
-        ]);
+        // Stage 1 -> Stage 2
+        if ($order->order_status === 'Prototype Approval') {
+            $order->update(['order_status' => 'Full Production']);
+            $message = 'Prototype approved! Order ' . $order->po_number . ' is now in Full Production.';
+        }
+        // Stage 2 -> Stage 3
+        elseif ($order->order_status === 'Full Production') {
+            $order->update(['order_status' => 'Ready for Delivery']);
+            $message = 'Order ' . $order->po_number . ' marked as Ready for Delivery.';
+        }
 
-        return back()->with('success', 'Order ' . $order->po_number . ' marked as Ready for Delivery.');
+        return back()->with('success', $message ?? 'Status updated.');
     }
 }

@@ -10,7 +10,7 @@ class TrackingController extends Controller
     public function index()
     {
         // Fetch ALL orders, their clients, and their full payment history
-        $orders = Order::with(['client', 'payments'])
+        $orders = Order::with(['client', 'payments.transaction'])
             ->withSum('payments', 'amount')
             ->orderBy('created_at', 'desc')
             ->get();

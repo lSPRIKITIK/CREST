@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -20,7 +21,12 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        // Create a unique strike counter key based on the entered username
+        $throttleKey = 'login_strikes_' . strtolower($request->username);
+
         if (Auth::attempt($credentials, $request->has('remember'))) {
+            // SUCCESS: Clear their strike counter immediately
+            RateLimiter::clear($throttleKey);
 
             // SECURITY CHECK: Intercept deactivated users immediately
             if (Auth::user()->account_status !== 'active') {
@@ -33,22 +39,40 @@ class AuthController extends Controller
                 ])->onlyInput('username');
             }
 
-            // If active, proceed normally
             $request->session()->regenerate();
-
-            // Send each role to a page it is allowed to open
             return redirect($this->homeFor(Auth::user()));
         }
 
+        // FAILED LOGIN: Check if the username actually exists and is active
+        $user = clone User::where('username', $request->username)->first();
+
+        if ($user && $user->account_status === 'active') {
+            // Record a strike (lasts for 24 hours)
+            RateLimiter::hit($throttleKey, 86400);
+
+            if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+                // 5th Strike: Lock the account and clear the tracker
+                $user->update(['account_status' => 'deactivated']);
+                RateLimiter::clear($throttleKey);
+
+                return back()->withErrors([
+                    'username' => 'SECURITY ALERT: Account locked due to 5 failed login attempts. Please contact the Founder to reactivate your account.',
+                ])->onlyInput('username');
+            }
+
+            $attemptsLeft = 5 - RateLimiter::attempts($throttleKey);
+            return back()->withErrors([
+                'username' => "Incorrect password. You have $attemptsLeft attempt(s) left before your account is locked.",
+            ])->onlyInput('username');
+        }
+
+        // Generic error if username doesn't exist or is already deactivated
         return back()->withErrors([
-            'username' => 'The provided credentials do not match our records.',
+            'username' => 'The provided credentials do not match our records or your account is disabled.',
         ])->onlyInput('username');
     }
 
     /**
-     * Landing page per role. Dashboard is restricted to Sales + Founders.
-     */
-/**
      * Landing page per role with explicit routing rules.
      */
     private function homeFor(User $user): string
@@ -56,7 +80,7 @@ class AuthController extends Controller
         return match ($user->employee?->role) {
             'Production Manager', 'Craftsmen'                       => route('production.index'),
             'Delivery Personnel'                                    => route('delivery.index'),
-            'Sales & Record Personnel', 'Founders/General Manager' => route('dashboard'),
+            'Sales & Record Personnel', 'Founders/General Manager'  => route('dashboard'),
             default                                                 => route('dashboard'),
         };
     }

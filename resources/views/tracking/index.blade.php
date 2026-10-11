@@ -80,12 +80,15 @@
 
                 <div class="border border-gray-200 bg-white rounded-xl overflow-hidden shadow-sm">
                     <table class="w-full text-left text-sm text-gray-700">
+
+
                         <thead class="text-xs text-gray-500 uppercase border-b border-gray-100 bg-gray-50/50">
                             <tr>
                                 <th class="p-4 font-bold tracking-wider">Date Paid</th>
                                 <th class="p-4 font-bold tracking-wider">Type</th>
                                 <th class="p-4 font-bold tracking-wider">Method</th>
                                 <th class="p-4 font-bold tracking-wider">Ref #</th>
+                                <th class="p-4 font-bold tracking-wider">Receipt #</th> <!-- NEW COLUMN -->
                                 <th class="p-4 font-bold tracking-wider text-right">Amount</th>
                             </tr>
                         </thead>
@@ -119,7 +122,11 @@
                     const amount = parseFloat(payment.amount).toLocaleString('en-US', {minimumFractionDigits: 2});
                     const ref = payment.reference_number ? payment.reference_number : '<span class="text-gray-400 italic">N/A</span>';
 
-                    // BULLETPROOF DATE SPLITTER: Extracts "YYYY-MM-DD" directly
+                    // Pull the receipt number from the related transaction
+                    const receipt = (payment.transaction && payment.transaction.receipt_number)
+                        ? payment.transaction.receipt_number
+                        : '<span class="text-gray-400 italic">N/A</span>';
+
                     const datePart = payment.payment_date ? payment.payment_date.split('T')[0] : '';
                     let formattedDate = datePart;
 
@@ -139,15 +146,15 @@
                         <td class="p-4 font-bold text-gray-900">${payment.payment_type}</td>
                         <td class="p-4">${payment.payment_method}</td>
                         <td class="p-4 font-mono text-xs text-gray-500">${ref}</td>
+                        <td class="p-4 font-mono text-xs font-bold text-blue-600">${receipt}</td> <!-- INJECTED HERE -->
                         <td class="p-4 text-right text-emerald-600 font-bold">₱${amount}</td>
                     `;
                     tbody.appendChild(tr);
                 });
+            } else {
+                // Notice the colspan changed from 5 to 6 to match the new column count
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400 text-xs italic">No payments have been recorded for this order yet.</td></tr>`;
             }
-            else {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400 text-xs italic">No payments have been recorded for this order yet.</td></tr>`;
-            }
-
             document.getElementById('order-modal').classList.remove('hidden');
         }
 

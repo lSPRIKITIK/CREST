@@ -19,7 +19,9 @@ class Payment extends Model
     public function employee() {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
-    public function transaction() {
-        return $this->hasOne(Transaction::class, 'payment_id');
+    public function transaction()
+    {
+        // Links the Payment to its Transaction using the payment_id
+        return $this->hasOne(\App\Models\Transaction::class, 'payment_id', 'payment_id');
     }
 }

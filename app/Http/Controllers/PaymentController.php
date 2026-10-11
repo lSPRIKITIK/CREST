@@ -62,9 +62,13 @@ class PaymentController extends Controller
             }
         }
 
-        DB::transaction(function () use ($validated, $order, $totalPaid, $inputAmount) {
+// ... (Keep the strict payment validation checks above this) ...
 
-            // Format the payment method
+        // 1. Generate the receipt number BEFORE the transaction loop so we can use it in the success message
+        $receiptNumber = 'REC-' . strtoupper(uniqid());
+
+        DB::transaction(function () use ($validated, $order, $totalPaid, $inputAmount, $receiptNumber) {
+
             $finalPaymentMethod = $validated['payment_method'];
             if ($finalPaymentMethod === 'Online Payment') {
                 $provider = $validated['online_provider'] === 'Others' ? $validated['custom_provider'] : $validated['online_provider'];
@@ -74,10 +78,8 @@ class PaymentController extends Controller
                 if (!empty($provider)) $finalPaymentMethod .= ' - ' . $provider;
             }
 
-            // Determine Payment Type dynamically (Strict 50/50 split)
             $paymentType = ($totalPaid == 0) ? 'Downpayment (50%)' : 'Final (50%)';
 
-            // 1. Record the Payment
             $payment = \App\Models\Payment::create([
                 'order_id' => $order->order_id,
                 'employee_id' => \Illuminate\Support\Facades\Auth::user()->employee->employee_id,
@@ -88,29 +90,26 @@ class PaymentController extends Controller
                 'reference_number' => $validated['reference_number'],
             ]);
 
-            // 2. Generate a unique receipt number
-            $receiptNumber = 'REC-' . strtoupper(uniqid());
-
-            // 3. Record the global Transaction
+            // 2. Save the generated receipt to the transactions table
             \App\Models\Transaction::create([
                 'payment_id' => $payment->payment_id,
                 'transaction_date' => $validated['transaction_date'],
                 'receipt_number' => $receiptNumber,
             ]);
 
-            // 4. Update workflow status
+            // 3. Update workflow status to include Prototype Approval
             if ($order->order_status === 'Pending Downpayment') {
-                $order->update(['order_status' => 'In Production']);
+                $order->update(['order_status' => 'Prototype Approval']);
             } elseif ($order->order_status === 'Delivered') {
                 $order->update(['order_status' => 'Completed']);
             }
         });
 
-        // Generate a dynamic success message based on the NEW status
+        // 4. Show the receipt number directly in the success message
         $newStatus = $order->fresh()->order_status;
         $message = $newStatus === 'Completed'
-            ? 'Final payment recorded successfully. Order is now officially Completed.'
-            : 'Downpayment recorded successfully. Order is now In Production.';
+            ? 'Final payment recorded successfully! (Receipt #: ' . $receiptNumber . '). Order is now officially Completed.'
+            : 'Downpayment recorded successfully! (Receipt #: ' . $receiptNumber . '). Order is now pending Prototype Approval.';
 
         return back()->with('success', $message);
     }
