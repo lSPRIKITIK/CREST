@@ -31,19 +31,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Client / Company Name</label>
-                        <input type="text" name="client_name" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                        <input type="text" name="client_name" value="{{ old('client_name') }}" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Contact Person</label>
+                        <input type="text" name="contact_person" value="{{ old('contact_person') }}" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Contact Number</label>
-                        <input type="text" name="contact_number" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Email Address</label>
-                        <input type="email" name="email" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                        <input type="text" name="contact_number" value="{{ old('contact_number') }}" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Delivery Address</label>
-                        <input type="text" name="address" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                        <input type="text" name="client_address" value="{{ old('client_address') }}" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                     </div>
                 </div>
             </div>
@@ -51,22 +51,37 @@
             <!-- Order Details Section -->
             <div>
                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">2. Order Specifications</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">PO Number</label>
-                        <input type="text" name="po_number" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                        <input type="text" name="po_number" value="{{ old('po_number') }}" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Total Amount (₱)</label>
-                        <input type="number" step="0.01" name="total_amount" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Item Type</label>
+                        <select name="item_type" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                            <option value="Medal" {{ old('item_type') == 'Medal' ? 'selected' : '' }}>Medal</option>
+                            <option value="Trophy" {{ old('item_type') == 'Trophy' ? 'selected' : '' }}>Trophy</option>
+                            <option value="Plaque" {{ old('item_type') == 'Plaque' ? 'selected' : '' }}>Plaque</option>
+                        </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Production Deadline</label>
-                        <input type="date" name="deadline" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Due Date</label>
+                        <input type="date" name="due_date" value="{{ old('due_date') }}" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Specifications (Design details)</label>
+                        <textarea name="specifications" rows="2" class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">{{ old('specifications') }}</textarea>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Target Delivery Date</label>
-                        <input type="date" name="expected_delivery_date" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Quantity</label>
+                        <input type="number" name="quantity" value="{{ old('quantity') }}" min="1" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Unit Price (₱)</label>
+                        <input type="number" step="0.01" name="unit_price" value="{{ old('unit_price') }}" min="0" required class="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all">
                     </div>
                 </div>
             </div>
