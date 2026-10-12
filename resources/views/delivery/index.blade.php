@@ -37,9 +37,11 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($orders as $order)
                     <tr class="hover:bg-gray-50 transition-colors">
+
                         <td class="py-5 px-2 font-bold text-gray-900">{{ $order->po_number }}</td>
                         <td class="py-5 px-2 font-medium">{{ $order->client->client_name }}</td>
-                        <td class="py-5 px-2 font-medium text-gray-500 max-w-xs truncate" title="{{ $order->client->address }}">{{ $order->client->address }}</td>
+
+                       <td class="py-5 px-2 font-medium text-gray-500 max-w-xs truncate" title="{{ $order->client->client_address }}">{{ $order->client->client_address }}</td>
                         <td class="py-5 px-2">
                             <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider border rounded-full bg-purple-50 text-purple-600 border-purple-200">
                                 {{ $order->order_status }}
